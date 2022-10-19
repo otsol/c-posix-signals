@@ -101,16 +101,21 @@ char* morseEncode(char x)
 void morseCode(char* s, pid_t parentPid) {
     // character by character print
     // Morse code
+    char morseChar[8];
     for (int i = 0; s[i]; i++) {
         printf("%s",morseEncode(s[i]));
-    }
-    for (int i = 0; s[i]; i++) {
-        if (s[i] == '.') {
-            kill(parentPid, SIGUSR1);
-        } else if (s[i] == '-') {
+        snprintf (morseChar, 8,"%s", morseEncode (s[i]));
+        for (int i = 0; morseChar[i]; i++) {
+            printf("morse char: %c", s[i]);
+            if (morseChar[i] == '.') {
+                kill(parentPid, SIGUSR1);
+            } else if (morseChar[i] == '-') {
                 kill(parentPid, SIGUSR2);
-        } else continue;
+            } else continue;
+        }
     }
+    //char* morseCode = morseEncode (s[])
+
 }
 
 void readSendMorse(int ifd, int ofd, pid_t parentPid) {

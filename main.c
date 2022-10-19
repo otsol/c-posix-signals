@@ -36,6 +36,7 @@ int main(int argc, char **argv) {
             // Only child process would come here
             printf("<child> I'm alive!\n");
             pid_t ppid = getppid();
+            printf("%d",ppid);
             readSendMorse(ifd, ofd, ppid);
             //kill(ppid, SIGUSR1);
             printf("%d",getpid());
@@ -62,11 +63,12 @@ int main(int argc, char **argv) {
                     // When read is interrupted by a signal, it will return -1 and errno is EINTR.
                     if (res == 1) {
                             if (mysignal == SIGUSR1) {
-                                    printf("received SIGUSR1: %d\n", mysignal);
-                                    //exit(123);
-                                    break;
+                                printf("received SIGUSR1: %d\n", mysignal);
+                                //exit(123);
+                                //break;
                             } else if (mysignal == SIGUSR2)   {
                                 printf("received SIGUSR2\n");
+                                //break;
                             }
                         }
                 }

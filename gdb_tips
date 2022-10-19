@@ -1,0 +1,7 @@
+set breakpoint after main in as1.c
+
+go to dbg console
+in gdb console:
+set detach-on-fork off
+set follow-fork-mode child
+set follow-exec-mode new
