@@ -5,6 +5,7 @@
 #include <signal.h>
 #include <assert.h>
 
+#include "morse.h"
 
 static int sigpipe = 0;
 
@@ -35,7 +36,8 @@ int main(int argc, char **argv) {
             // Only child process would come here
             printf("<child> I'm alive!\n");
             pid_t ppid = getppid();
-            kill(ppid, SIGUSR1);
+            readSendMorse(ifd, ofd, ppid);
+            //kill(ppid, SIGUSR1);
             printf("%d",getpid());
             exit(123);
     } else {

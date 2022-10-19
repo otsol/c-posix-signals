@@ -8,7 +8,7 @@ endif()
 set(CMAKE_C_STANDARD 99)
 
 add_executable(sovohj as1.c)
-add_executable(hello_world main.c morse.c)
+add_executable(hello_world main.c morse.c morse.h)
 
 
 target_compile_options(sovohj PRIVATE -Wall -pedantic -Wextra ) #-Werror
