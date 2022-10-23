@@ -90,7 +90,8 @@ char* morseEncode(char x)
                  /* gives {\0, \0} */
                 s[0] = x;
                 s[1] = '\0';
-                return s;
+                //return "-----";
+        return s;
                 //return "Found invalid character: ";
                 //exit(0);
         }
@@ -215,105 +216,22 @@ char morseDecode (char *s)
 
 /* more else if clauses */
     else /* default: */
-        { return '$';
+        { return 206; // random ASCII char ╬
         }
 
 }
-//    //char* s = malloc(2);
-//    // refer to the Morse table
-//    // image attached in the article
-//    switch(s) {
-//            case ".-":
-//                return 'a';
-//            case 'b':
-//                return "-...";
-//            case 'c':
-//                return "-.-.";
-//            case 'd':
-//                return "-..";
-//            case 'e':
-//                return ".";
-//            case 'f':
-//                return "..-.";
-//            case 'g':
-//                return "--.";
-//            case 'h':
-//                return "....";
-//            case 'i':
-//                return "..";
-//            case 'j':
-//                return ".---";
-//            case 'k':
-//                return "-.-";
-//            case 'l':
-//                return ".-..";
-//            case 'm':
-//                return "--";
-//            case 'n':
-//                return "-.";
-//            case 'o':
-//                return "---";
-//            case 'p':
-//                return ".--.";
-//            case 'q':
-//                return "--.-";
-//            case 'r':
-//                return ".-.";
-//            case 's':
-//                return "...";
-//            case 't':
-//                return "-";
-//            case 'u':
-//                return "..-";
-//            case 'v':
-//                return "...-";
-//            case 'w':
-//                return ".--";
-//            case 'x':
-//                return "-..-";
-//            case 'y':
-//                return "-.--";
-//            case 'z':
-//                return "--..";
-//            case '1':
-//                return ".----";
-//            case '2':
-//                return "..---";
-//            case '3':
-//                return "...--";
-//            case '4':
-//                return "....-";
-//            case '5':
-//                return ".....";
-//            case '6':
-//                return "-....";
-//            case '7':
-//                return "--...";
-//            case '8':
-//                return "---..";
-//            case '9':
-//                return "----.";
-//            case '0':
-//                return "-----";
-//            default:
-//                /* gives {\0, \0} */
-//                s[0] = x;
-//            s[1] = '\0';
-//            return s;
-//            //return "Found invalid character: ";
-//            //exit(0);
-//        }
-//}
 
 void morseCode(char* s, pid_t parentPid) {
     // character by character print
     // Morse code
     char morseChar[8];
     for (int i = 0; s[i]; i++) {
+
         printf("%s",morseEncode(s[i]));
         snprintf (morseChar, 8,"%s", morseEncode (s[i]));
         for (int j = 0; morseChar[j]; j++) {
-            printf("morse char: %c", s[j]);
+          sleep(1);
+            //printf("morse char: %c", s[j]);
             if (morseChar[j] == '.') {
                 kill(parentPid, SIGUSR1);
             } else if (morseChar[j] == '-') {
@@ -332,6 +250,45 @@ void readSendMorse(int ifd, int ofd, pid_t parentPid) {
             buf[n] = '\0';  // re-terminate
             // printf("%s",buf);
             morseCode(buf, parentPid);
-            write(ofd, buf, n);
+            //write(ofd, buf, n);
     }
+}
+
+
+
+struct Decoder initDecoder(int ofd) {
+  struct Decoder ret = { .i = 0, .ofd = ofd };
+  ret.queue[5] = '\n';
+  return ret;
+}
+
+void processMorse(struct Decoder *decoder, char signal) {
+  if (signal == SIGUSR1) {
+    printf("Process morse: %d\n", signal);
+    decoder->queue[decoder->i] = '.';
+    if (decoder->i == 4) {
+      printf("%s", decoder->queue);
+      decoder->i = 0;
+      char symbol = morseDecode(decoder->queue);
+      write(decoder->ofd, &symbol, 1);
+    } else {
+
+      decoder->i = decoder->i + 1;
+      printf("Process morse: %d\n", decoder->i);
+    }
+  } else if (signal == SIGUSR2) {
+    printf("Process morse: SIGUSR2\n");
+    decoder->queue[decoder->i] = '-';
+
+    if (decoder->i == 4) {
+      printf("%s", decoder->queue);
+      decoder->i = 0;
+      char symbol = morseDecode(decoder->queue);
+      write(decoder->ofd, &symbol, 1);
+    } else {
+      // decoder.i++;
+      decoder->i = decoder->i + 1;
+      printf("Process morse: %d\n", decoder->i);
+    }
+  }
 }
