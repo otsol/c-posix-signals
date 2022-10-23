@@ -84,14 +84,14 @@ int main (int argc, char **argv)
     if (buf == NULL) return -1;
     while (1)
         {
-            int s;
+            long s;
             s = read (ifd, buf, BLOCKSIZE);
             if (s < 0) return -1;
             if (s == 0) break; // input closed
-            int r = 0;
+            long r = 0;
             while (r < s)
                 {
-                    int t = write (ofd, buf + r, s - r);
+                    long t = write (ofd, buf + r, s - r);
                     if (t < 0)
                         {
                             return -1;

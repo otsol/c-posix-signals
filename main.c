@@ -62,15 +62,15 @@ int main(int argc, char **argv) {
                     int res = read(pipefd[0],&mysignal,1);
                     // When read is interrupted by a signal, it will return -1 and errno is EINTR.
                     if (res == 1) {
-                            if (mysignal == SIGUSR1) {
-                                printf("received SIGUSR1: %d\n", mysignal);
-                                //exit(123);
-                                //break;
-                            } else if (mysignal == SIGUSR2)   {
-                                printf("received SIGUSR2\n");
-                                //break;
-                            }
+                        if (mysignal == SIGUSR1) {
+                            printf("received SIGUSR1: %d\n", mysignal);
+                            //exit(123);
+                            //break;
+                        } else if (mysignal == SIGUSR2)   {
+                            printf("received SIGUSR2\n");
+                            //break;
                         }
+                    }
                 }
 
         }
@@ -85,11 +85,11 @@ int main(int argc, char **argv) {
 //        printf("%c",c);
 //    }
 // seems like a stream cannot be passed or read from (fopen ...)
-    while ((n = read(ifd, buf, 128)) > 0) {
-        buf[n] = '\0';  // re-terminate
-        printf("%s",buf);
-        write(ofd, buf, n);
-    }
-    printf("%d",getpid());
-    return 0;
+//    while ((n = read(ifd, buf, 128)) > 0) {
+//        buf[n] = '\0';  // re-terminate
+//        printf("%s",buf);
+//        write(ofd, buf, n);
+//    }
+//    printf("%d",getpid());
+//    return 0;
 }
