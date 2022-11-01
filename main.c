@@ -40,6 +40,7 @@ int main(int argc, char **argv) {
     readSendMorse(ifd, ofd, ppid);
     //kill(ppid, SIGUSR1);
     printf("%d", getpid());
+    //kill(ppid,SIGINT);
     exit(123);
   } else {
     // Only parent process would come here
@@ -62,6 +63,10 @@ int main(int argc, char **argv) {
 
     assert((sigaction(SIGUSR1, &sig, NULL)) == 0);
     assert((sigaction(SIGUSR2, &sig, NULL)) == 0);
+    assert((sigaction(SIGALRM, &sig, NULL)) == 0);
+    assert((sigaction(SIGCHLD, &sig, NULL)) == 0);
+
+
 
     //int i = 0;
     //int queue[5];
@@ -83,6 +88,11 @@ int main(int argc, char **argv) {
           printf("received SIGUSR2\n");
           //break;
           processMorse(&dec, mysignal);
+        } else if (mysignal == SIGALRM) {
+          processMorse(&dec, mysignal);
+        } else if (mysignal == SIGCHLD) {
+          break;
+          //exit(0);
         }
       }
     }
