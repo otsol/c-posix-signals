@@ -15,32 +15,32 @@ char *morseEncode(char x) {
   // refer to the Morse table
   // image attached in the article
   switch (x) {
-    case 'a':return ".-";
-    case 'b':return "-...";
-    case 'c':return "-.-.";
-    case 'd':return "-..";
-    case 'e':return ".";
-    case 'f':return "..-.";
-    case 'g':return "--.";
-    case 'h':return "....";
-    case 'i':return "..";
-    case 'j':return ".---";
-    case 'k':return "-.-";
-    case 'l':return ".-..";
-    case 'm':return "--";
-    case 'n':return "-.";
-    case 'o':return "---";
-    case 'p':return ".--.";
-    case 'q':return "--.-";
-    case 'r':return ".-.";
-    case 's':return "...";
-    case 't':return "-";
-    case 'u':return "..-";
-    case 'v':return "...-";
-    case 'w':return ".--";
-    case 'x':return "-..-";
-    case 'y':return "-.--";
-    case 'z':return "--..";
+    case 'A':return ".-";
+    case 'B':return "-...";
+    case 'C':return "-.-.";
+    case 'D':return "-..";
+    case 'E':return ".";
+    case 'F':return "..-.";
+    case 'G':return "--.";
+    case 'H':return "....";
+    case 'I':return "..";
+    case 'J':return ".---";
+    case 'K':return "-.-";
+    case 'L':return ".-..";
+    case 'M':return "--";
+    case 'N':return "-.";
+    case 'O':return "---";
+    case 'P':return ".--.";
+    case 'Q':return "--.-";
+    case 'R':return ".-.";
+    case 'S':return "...";
+    case 'T':return "-";
+    case 'U':return "..-";
+    case 'V':return "...-";
+    case 'W':return ".--";
+    case 'X':return "-..-";
+    case 'Y':return "-.--";
+    case 'Z':return "--..";
     case '1':return ".----";
     case '2':return "..---";
     case '3':return "...--";
@@ -51,6 +51,24 @@ char *morseEncode(char x) {
     case '8':return "---..";
     case '9':return "----.";
     case '0':return "-----";
+    case '&':return ".-...";
+    case '\'':return ".----.";
+    case '@':return ".--.-";
+    case ')':return "-.--.-";
+    case '(':return "-.--.";
+    case ':':return "---...";
+    case ',':return "--..--";
+    case '=':return "-...-";
+    case '!':return "-.-.--";
+    case '.':return ".-.-.-";
+    case '-':return "-.....-";
+      //case '=':return "-...-"; multiply??
+      // case '=':return "-...-"; percentage??
+    case '+':return ".-.-.";
+    case '"':return ".-..-.";
+    case '?':return "..--..";
+    case '/':return "-..-.";
+
     default:
       /* gives {\0, \0} */
       s[0] = x;
@@ -64,59 +82,57 @@ char *morseEncode(char x) {
 
 char morseDecode(char *s) {
   if (strcmp(s, ".-") == 0) {
-    return 'a';
+    return 'A';
   } else if (strcmp(s, "-...") == 0) {
-    return 'b';
+    return 'B';
   } else if (strcmp(s, "-.-.") == 0) {
-    return 'c';
+    return 'C';
   } else if (strcmp(s, "-..") == 0) {
-    return 'd';
+    return 'D';
   } else if (strcmp(s, ".") == 0) {
-    return 'e';
+    return 'E';
   } else if (strcmp(s, "..-.") == 0) {
-    return 'f';
+    return 'F';
   } else if (strcmp(s, "--.") == 0) {
-    return 'g';
+    return 'G';
   } else if (strcmp(s, "....") == 0) {
-    return 'h';
+    return 'H';
   } else if (strcmp(s, "..") == 0) {
-    return 'i';
+    return 'I';
   } else if (strcmp(s, ".---") == 0) {
-    return 'j';
+    return 'J';
   } else if (strcmp(s, "-.-") == 0) {
-    return 'k';
+    return 'K';
   } else if (strcmp(s, ".-..") == 0) {
-    return 'l';
+    return 'L';
   } else if (strcmp(s, "--") == 0) {
-    return 'm';
+    return 'M';
   } else if (strcmp(s, "-.") == 0) {
-    return 'n';
+    return 'N';
   } else if (strcmp(s, "---") == 0) {
-    return 'o';
+    return 'O';
   } else if (strcmp(s, ".--.") == 0) {
-    return 'p';
+    return 'P';
   } else if (strcmp(s, "--.-") == 0) {
-    return 'q';
+    return 'Q';
   } else if (strcmp(s, ".-.") == 0) {
-    return 'r';
+    return 'R';
   } else if (strcmp(s, "...") == 0) {
-    return 's';
+    return 'S';
   } else if (strcmp(s, "-") == 0) {
-    return 't';
+    return 'T';
   } else if (strcmp(s, "..-") == 0) {
-    return 'u';
+    return 'U';
   } else if (strcmp(s, "...-") == 0) {
-    return 'v';
+    return 'V';
   } else if (strcmp(s, ".--") == 0) {
-    return 'w';
+    return 'W';
   } else if (strcmp(s, "-..-") == 0) {
-    return 'x';
+    return 'X';
   } else if (strcmp(s, "-.--") == 0) {
-    return 'y';
+    return 'Y';
   } else if (strcmp(s, "--..") == 0) {
-    return 'z';
-  } else if (strcmp(s, "-.--") == 0) {
-    return 'y';
+    return 'Z';
   } else if (strcmp(s, ".----") == 0) {
     return '1';
   } else if (strcmp(s, "..---") == 0) {
@@ -137,6 +153,36 @@ char morseDecode(char *s) {
     return '9';
   } else if (strcmp(s, "-----") == 0) {
     return '0';
+  } else if (strcmp(s, ".-...") == 0) {
+    return '&';
+  } else if (strcmp(s, ".----.") == 0) {
+    return '\'';
+  } else if (strcmp(s, ".--.-") == 0) {
+    return '@';
+  } else if (strcmp(s, "-.--.-") == 0) {
+    return ')';
+  } else if (strcmp(s, "-.--.") == 0) {
+    return '(';
+  } else if (strcmp(s, "---...") == 0) {
+    return ':';
+  } else if (strcmp(s, "--..--") == 0) {
+    return ',';
+  } else if (strcmp(s, "-...-") == 0) {
+    return '=';
+  } else if (strcmp(s, "-.-.--") == 0) {
+    return '!';
+  } else if (strcmp(s, ".-.-.-") == 0) {
+    return '.';
+  } else if (strcmp(s, "-.....-") == 0) {
+    return '-';
+  } else if (strcmp(s, ".-.-.") == 0) {
+    return '+';
+  } else if (strcmp(s, ".-..-.") == 0) {
+    return '"';
+  } else if (strcmp(s, "..--..") == 0) {
+    return '?';
+  } else if (strcmp(s, "-..-.") == 0) {
+    return '/';
   }
 
 /* more else if clauses */
@@ -150,14 +196,14 @@ char morseDecode(char *s) {
 void morseCode(char *s, pid_t parentPid) {
   // character by character print
   // Morse code
-  char morseChar[8];
+  char morseChar[10];
   for (int i = 0; s[i]; i++) {
 
     printf("%s", morseEncode(s[i]));
     snprintf(morseChar, 8, "%s", morseEncode(s[i]));
     for (int j = 0; morseChar[j]; j++) {
       //sleep(1);
-      //nanosleep((const struct timespec[]){{0, 10000000L}}, NULL);
+      nanosleep((const struct timespec[]){{0, 100000L}}, NULL);
       //printf("morse char: %c", s[j]);
       if (morseChar[j] == '.') {
         kill(parentPid, SIGUSR1);
@@ -166,7 +212,7 @@ void morseCode(char *s, pid_t parentPid) {
       } else continue;
     }
     //sleep(1);
-    //nanosleep((const struct timespec[]){{0, 10000000L}}, NULL);
+    nanosleep((const struct timespec[]){{0, 100000L}}, NULL);
     kill(parentPid, SIGALRM); // end of one text char
   }
   //char* morseCode = morseEncode (s[])
@@ -182,13 +228,13 @@ void readSendMorse(int ifd, int ofd, pid_t parentPid) {
     morseCode(buf, parentPid);
     //write(ofd, buf, n);
   }
-  //sleep(1);
+  sleep(1);
 
 }
 
 struct Decoder initDecoder(int ofd) {
   struct Decoder ret = {.i = 0, .ofd = ofd};
-  ret.queue[5] = '\n';
+  ret.queue[9] = '\0';
   return ret;
 }
 
@@ -223,11 +269,11 @@ void processMorse(struct Decoder *decoder, char signal) {
 //    }
 
   } else if (signal == SIGALRM) { // end of morse string reached process 1...5 morse chars
-      decoder->queue[decoder->i] = '\0';
-      char symbol = morseDecode(decoder->queue);
-      printf("%s", decoder->queue);
-      decoder->i = 0;
-      write(decoder->ofd, &symbol, 1);
+    decoder->queue[decoder->i] = '\0';
+    char symbol = morseDecode(decoder->queue);
+    printf("%s", decoder->queue);
+    decoder->i = 0;
+    write(decoder->ofd, &symbol, 1);
   } else if (signal == SIGINT) {
     printf("Process received SIGINT\nClosing...\n");
     exit(1);

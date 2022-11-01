@@ -11,7 +11,7 @@
 #include <string.h>
 
 struct Decoder {
-  char queue[6]; // stores morse chars
+  char queue[10]; // stores morse chars
   int i; // index
   int ofd;
 };
