@@ -15,7 +15,8 @@ int main(int argc, char **argv) {
   int ifd, ofd;
   char ifd_str[8];
   char ofd_str[8];
-  printf("%d", getpid());
+//  printf("%d\n", getpid());
+//  printf("hello mom\n");
   // Quick and dirty command line parsing
   if (argc == 2) { // Only input file, output stdout
     ofd = STDOUT_FILENO;
@@ -29,10 +30,10 @@ int main(int argc, char **argv) {
         return -1;
       }
     }
-    snprintf(ifd_str, 8, "%d", ifd);
-    snprintf(ofd_str, 8, "%d", ofd);
-    if (execl("./hello_world", "hello_world", ifd_str, ofd_str, NULL) != 0)
-      perror("execv");
+//    snprintf(ifd_str, 8, "%d", ifd);
+//    snprintf(ofd_str, 8, "%d", ofd);
+//    if (execl("./hello_world", "hello_world", ifd_str, ofd_str, NULL) != 0)
+//      perror("execv");
   } else if (argc == 3) { // Both input and output file given
     if (strcmp(argv[1], "-") == 0) {
       ifd = STDIN_FILENO;
@@ -52,33 +53,36 @@ int main(int argc, char **argv) {
         return -1;
       }
     }
-    snprintf(ifd_str, 8, "%d", ifd);
-    snprintf(ofd_str, 8, "%d", ofd);
-    if (execl("./hello_world", "hello_world", ifd_str, ofd_str, NULL) != 0)
-      perror("execv");
+//    snprintf(ifd_str, 8, "%d", ifd);
+//    snprintf(ofd_str, 8, "%d", ofd);
+//    if (execl("./hello_world", "hello_world", ifd_str, ofd_str, NULL) != 0)
+//      perror("execv");
   } else {
     fprintf(stderr, "Usage: %s [input|-] [output|-]\n", argv[0]);
     return -1;
   }
-
+  snprintf(ifd_str, 8, "%d", ifd);
+  snprintf(ofd_str, 8, "%d", ofd);
+  if (execl("./hello_world", "hello_world", ifd_str, ofd_str, NULL) != 0)
+    perror("execv");
   // Allocate buffer
-  char *buf = malloc(BLOCKSIZE);
-  if (buf == NULL) return -1;
-  while (1) {
-    long s;
-    s = read(ifd, buf, BLOCKSIZE);
-    if (s < 0) return -1;
-    if (s == 0) break; // input closed
-    long r = 0;
-    while (r < s) {
-      long t = write(ofd, buf + r, s - r);
-      if (t < 0) {
-        return -1;
-      }
-      r += t;
-    }
-  }
-  free(buf);
+//  char *buf = malloc(BLOCKSIZE);
+//  if (buf == NULL) return -1;
+//  while (1) {
+//    long s;
+//    s = read(ifd, buf, BLOCKSIZE);
+//    if (s < 0) return -1;
+//    if (s == 0) break; // input closed
+//    long r = 0;
+//    while (r < s) {
+//      long t = write(ofd, buf + r, s - r);
+//      if (t < 0) {
+//        return -1;
+//      }
+//      r += t;
+//    }
+//  }
+//  free(buf);
   close(ifd);
   close(ofd);
 

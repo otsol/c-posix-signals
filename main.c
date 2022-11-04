@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <assert.h>
+#include <time.h>
 
 #include "morse.h"
 
@@ -20,11 +21,11 @@ int main(int argc, char **argv) {
   char buf[129];
   ifd = atoi(argv[1]);
   ofd = atoi(argv[2]);
-  printf("Hello, World!\n");
-  printf("Number of arguments %d\n", argc);
+//  printf("Hello, World!\n");
+//  printf("Number of arguments %d\n", argc);
 
-  printf("I'm open-exec2 and ofd is %d\n", ifd);
-  printf("I'm open-exec2 and ofd is %d\n", ofd);
+//  printf("I'm open-exec2 and ofd is %d\n", ifd);
+//  printf("I'm open-exec2 and ofd is %d\n", ofd);
 
   pid = fork();
   if (pid == -1) {
@@ -34,20 +35,34 @@ int main(int argc, char **argv) {
 
   if (pid == 0) {
     // Only child process would come here
-    printf("<child> I'm alive!\n");
+
+
+    //struct sigaction sig;
+    //int pipefd[2];
+    //assert(pipe(pipefd) == 0);
+    //sigpipe = pipefd[1];
+
+    //sigemptyset(&sig.sa_mask);
+    //sig.sa_flags = 0;
+    //sig.sa_handler = sig_usr;
+    //assert((sigaction(SIGUSR1, &sig, NULL)) == 0);
+
+//    printf("<child> I'm alive!\n");
     pid_t ppid = getppid();
-    printf("%d", ppid);
-    readSendMorse(ifd, ofd, ppid);
+//    printf("%d", ppid);
+    readSendMorse(ifd, ofd, ppid, NULL);
     //kill(ppid, SIGUSR1);
-    printf("%d", getpid());
+//    printf("%d", getpid());
     //kill(ppid,SIGINT);
+    close(ifd);
+    close(ofd);
     exit(123);
   } else {
     // Only parent process would come here
-    printf("<parent> Me too!\n");
+//    printf("<parent> Me too!\n");
 
-    pid_t pid = getpid();
-    printf("%d", pid);
+    pid_t this_pid = getpid();
+//    printf("%d", this_pid);
     struct sigaction sig;
 
 
@@ -73,19 +88,21 @@ int main(int argc, char **argv) {
 
     // init decoder
     struct Decoder dec = initDecoder(ofd);
-
+    //sleep(1);
+    nanosleep((const struct timespec[]){{0, 10000000L}}, NULL);
+    kill(pid, SIGUSR1);
     for (;;) {
       char mysignal;
       int res = read(pipefd[0], &mysignal, 1);
       // When read is interrupted by a signal, it will return -1 and errno is EINTR.
       if (res == 1) {
         if (mysignal == SIGUSR1) {
-          printf("received SIGUSR1: %d\n", mysignal);
+//          printf("received SIGUSR1: %d\n", mysignal);
           //exit(123);
           //break;
           processMorse(&dec, mysignal);
         } else if (mysignal == SIGUSR2) {
-          printf("received SIGUSR2\n");
+//          printf("received SIGUSR2\n");
           //break;
           processMorse(&dec, mysignal);
         } else if (mysignal == SIGALRM) {
@@ -94,8 +111,11 @@ int main(int argc, char **argv) {
           break;
           //exit(0);
         }
+        kill(pid, SIGUSR1);
       }
     }
+    close(pipefd[0]);
+    close(pipefd[1]);
 
   }
 
@@ -116,4 +136,6 @@ int main(int argc, char **argv) {
 //    }
 //    printf("%d",getpid());
 //    return 0;
+
+
 }

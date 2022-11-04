@@ -11,7 +11,7 @@
 // function to encode a alphabet as
 // Morse code
 char *morseEncode(char x) {
-  char *s = malloc(2);
+  //char *s = malloc(2);
   // refer to the Morse table
   // image attached in the article
   switch (x) {
@@ -71,10 +71,10 @@ char *morseEncode(char x) {
 
     default:
       /* gives {\0, \0} */
-      s[0] = x;
-      s[1] = '\0';
+      //s[0] = x;
+      //s[1] = '\0';
       //return "-----";
-      return s;
+      return ".......";
       //return "Found invalid character: ";
       //exit(0);
   }
@@ -188,44 +188,57 @@ char morseDecode(char *s) {
 /* more else if clauses */
   else /* default: */
   {
-    return 206; // random ASCII char ╬
+    return '*'; // random ASCII char *
   }
 
 }
 
-void morseCode(char *s, pid_t parentPid) {
+void morseCode(char *s, pid_t parentPid, int pipefd[2]) {
   // character by character print
   // Morse code
   char morseChar[10];
   for (int i = 0; s[i]; i++) {
+    //char mysignal;
+    //int res = read(pipefd[0], &mysignal, 1);
 
-    printf("%s", morseEncode(s[i]));
+    sigset_t sigset;
+    sigemptyset(&sigset);
+    sigaddset(&sigset, SIGUSR1);
+    sigprocmask(SIG_BLOCK, &sigset, NULL);
+
+
+    int sig;
+    int result;/* = sigwait(&sigset, &sig);*/
+//    printf("%s", morseEncode(s[i]));
     snprintf(morseChar, 8, "%s", morseEncode(s[i]));
     for (int j = 0; morseChar[j]; j++) {
+      //int sig;
+      result = sigwait(&sigset, &sig);
       //sleep(1);
-      nanosleep((const struct timespec[]){{0, 100000L}}, NULL);
-      //printf("morse char: %c", s[j]);
+      //nanosleep((const struct timespec[]){{0, 100000L}}, NULL);
+//      printf("morse char: %c", s[j]);
       if (morseChar[j] == '.') {
         kill(parentPid, SIGUSR1);
       } else if (morseChar[j] == '-') {
         kill(parentPid, SIGUSR2);
       } else continue;
     }
+    result = sigwait(&sigset, &sig);
     //sleep(1);
-    nanosleep((const struct timespec[]){{0, 100000L}}, NULL);
+    //nanosleep((const struct timespec[]){{0, 100000L}}, NULL);
     kill(parentPid, SIGALRM); // end of one text char
   }
   //char* morseCode = morseEncode (s[])
 
 }
 
-void readSendMorse(int ifd, int ofd, pid_t parentPid) {
+void readSendMorse(int ifd, int ofd, pid_t parentPid, int pipefd[2]) {
   char buf[129];
   long n;
   while ((n = read(ifd, buf, 128)) > 0) {
     buf[n] = '\0';  // re-terminate
     // printf("%s",buf);
-    morseCode(buf, parentPid);
+    morseCode(buf, parentPid, NULL);
     //write(ofd, buf, n);
   }
   sleep(1);
@@ -240,7 +253,7 @@ struct Decoder initDecoder(int ofd) {
 
 void processMorse(struct Decoder *decoder, char signal) {
   if (signal == SIGUSR1 || signal == SIGUSR2/* || signal == SIGALRM*/) {
-    printf("Process morse: %d\n", signal);
+    //printf("Process morse: %d\n", signal);
     if (signal == SIGUSR1) {
       decoder->queue[decoder->i] = '.';
     } else /*if (signal == SIGUSR2)*/ {
@@ -271,11 +284,11 @@ void processMorse(struct Decoder *decoder, char signal) {
   } else if (signal == SIGALRM) { // end of morse string reached process 1...5 morse chars
     decoder->queue[decoder->i] = '\0';
     char symbol = morseDecode(decoder->queue);
-    printf("%s", decoder->queue);
+    //printf("%s", decoder->queue);
     decoder->i = 0;
     write(decoder->ofd, &symbol, 1);
   } else if (signal == SIGINT) {
-    printf("Process received SIGINT\nClosing...\n");
+    //printf("Process received SIGINT\nClosing...\n");
     exit(1);
   }
 }
