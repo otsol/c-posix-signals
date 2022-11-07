@@ -199,30 +199,28 @@ void morseCode(char *s, pid_t parentPid, int pipefd[2]) {
     sigprocmask(SIG_BLOCK, &sigset, NULL);
 
     int sig;
-    int result;/* = sigwait(&sigset, &sig);*/
-//    printf("%s", morseEncode(s[i]));
+
     snprintf(morseChar, 8, "%s", morseEncode(s[i]));
     for (int j = 0; morseChar[j]; j++) {
-
-      result = sigwait(&sigset, &sig);
+      // wait for response from parent process
+      // allows synchronization
+      sigwait(&sigset, &sig);
       if (morseChar[j] == '.') {
         kill(parentPid, SIGUSR1);
       } else if (morseChar[j] == '-') {
         kill(parentPid, SIGUSR2);
       } else continue;
     }
-    result = sigwait(&sigset, &sig);
-    //sleep(1);
-    //nanosleep((const struct timespec[]){{0, 100000L}}, NULL);
+    sigwait(&sigset, &sig);
     kill(parentPid, SIGALRM); // end of one text char
   }
 
 }
 
-void readSendMorse(int ifd, int ofd, pid_t parentPid, int pipefd[2]) {
+void readSendMorse(int ifd, pid_t parentPid, int pipefd[2]) {
   char buf[129];
   long n;
-  //printf("Child idf: %d", ifd);
+  // read from input file until EOF is reached connection closes
   while ((n = read(ifd, buf, 128)) > 0) {
       buf[n] = '\0';  // re-terminate
       morseCode(buf, parentPid, NULL);
@@ -231,13 +229,14 @@ void readSendMorse(int ifd, int ofd, pid_t parentPid, int pipefd[2]) {
   sleep(1);
 
 }
-
+// initialize decoder struct that stores morse charachers '-' and '.'
 struct Decoder initDecoder(int ofd) {
   struct Decoder ret = {.i = 0, .ofd = ofd};
   ret.queue[9] = '\0';
   return ret;
 }
 
+// process one morse character / signal at a time
 void processMorse(struct Decoder *decoder, char signal) {
   if (signal == SIGUSR1 || signal == SIGUSR2/* || signal == SIGALRM*/) {
     if (signal == SIGUSR1) {
@@ -251,7 +250,6 @@ void processMorse(struct Decoder *decoder, char signal) {
   } else if (signal == SIGALRM) { // end of morse string reached process 1...5 morse chars
     decoder->queue[decoder->i] = '\0';
     char symbol = morseDecode(decoder->queue);
-    //printf("%s", decoder->queue);
     decoder->i = 0;
     write(decoder->ofd, &symbol, 1);
   } else if (signal == SIGINT) {

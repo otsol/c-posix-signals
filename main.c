@@ -8,7 +8,6 @@
 #include <string.h>
 #include <fcntl.h>
 
-#define BLOCKSIZE 4096
 
 int main(int argc, char **argv) {
   int ifd, ofd;
@@ -54,6 +53,10 @@ int main(int argc, char **argv) {
   }
   //printf("%d",ifd);
 
+
+  // if input file descriptor is stdin, then create a temporary file
+  // and write to it from stdin.
+  // this temp file is passed to a new process (same program, new process)
   if (ifd == STDIN_FILENO) {
     // create tempfile to store input from stdin
     int ifd_temp = open("as1_temp", O_WRONLY | O_CREAT | O_TRUNC, 0666);
@@ -68,7 +71,8 @@ int main(int argc, char **argv) {
     }
 
     // call to itself with new tempfile for input
-    execl("./sovohj", "sovohj", "as1_temp", argv[2], NULL);
+    if (execl("./sovohj", "sovohj", "as1_temp", argv[2], NULL) != 0)
+      perror("execv");
     close(ifd);
     close(ofd);
     return 0;
@@ -77,7 +81,7 @@ int main(int argc, char **argv) {
 
   snprintf(ifd_str, 8, "%d", ifd);
   snprintf(ofd_str, 8, "%d", ofd);
-  if (execl("./hello_world", "hello_world", ifd_str, ofd_str, NULL) != 0)
+  if (execl("./child_exec", "child_exec", ifd_str, ofd_str, NULL) != 0)
     perror("execv");
 
   close(ifd);

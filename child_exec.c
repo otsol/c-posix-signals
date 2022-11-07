@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 
     // Pass input file fd, output file fd parent process ID to morse library
     pid_t ppid = getppid();
-    readSendMorse(ifd, ofd, ppid, NULL);
+    readSendMorse(ifd, ppid, NULL);
 
 
     close(ifd);
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     for (;;) {
       char mysignal;
       // read one signal from signal pipe
-      int res = read(pipefd[0], &mysignal, 1);
+      long res = read(pipefd[0], &mysignal, 1);
       // When read is interrupted by a signal, it will return -1 and errno is EINTR.
       if (res == 1) {
         if (mysignal == SIGUSR1) {
