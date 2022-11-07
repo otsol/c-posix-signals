@@ -1,7 +1,7 @@
 //
 // Created by Otso Luukkanen on 19.10.2022.
 //
-// CPP program to demonstrate Morse code
+// C program to demonstrate Morse code
 
 
 #include <stdlib.h>
@@ -11,9 +11,7 @@
 // function to encode a alphabet as
 // Morse code
 char *morseEncode(char x) {
-  //char *s = malloc(2);
-  // refer to the Morse table
-  // image attached in the article
+  // switch case table to translate char to morse string
   switch (x) {
     case 'A':return ".-";
     case 'B':return "-...";
@@ -62,25 +60,22 @@ char *morseEncode(char x) {
     case '!':return "-.-.--";
     case '.':return ".-.-.-";
     case '-':return "-.....-";
-      //case '=':return "-...-"; multiply??
-      // case '=':return "-...-"; percentage??
     case '+':return ".-.-.";
     case '"':return ".-..-.";
     case '?':return "..--..";
     case '/':return "-..-.";
 
     default:
-      /* gives {\0, \0} */
-      //s[0] = x;
-      //s[1] = '\0';
-      //return "-----";
+      // if there is an unrecognized character
+      // this will be sent and replaced with star / multiplication sign '*'
+      // these include newline and space
       return ".......";
-      //return "Found invalid character: ";
-      //exit(0);
+
   }
 }
 
 char morseDecode(char *s) {
+  // morse string to char
   if (strcmp(s, ".-") == 0) {
     return 'A';
   } else if (strcmp(s, "-...") == 0) {
@@ -185,10 +180,9 @@ char morseDecode(char *s) {
     return '/';
   }
 
-/* more else if clauses */
   else /* default: */
   {
-    return '*'; // random ASCII char *
+    return '*'; // random ASCII char '*' to signify unrecognized character
   }
 
 }
@@ -198,25 +192,19 @@ void morseCode(char *s, pid_t parentPid, int pipefd[2]) {
   // Morse code
   char morseChar[10];
   for (int i = 0; s[i]; i++) {
-    //char mysignal;
-    //int res = read(pipefd[0], &mysignal, 1);
 
     sigset_t sigset;
     sigemptyset(&sigset);
     sigaddset(&sigset, SIGUSR1);
     sigprocmask(SIG_BLOCK, &sigset, NULL);
 
-
     int sig;
     int result;/* = sigwait(&sigset, &sig);*/
 //    printf("%s", morseEncode(s[i]));
     snprintf(morseChar, 8, "%s", morseEncode(s[i]));
     for (int j = 0; morseChar[j]; j++) {
-      //int sig;
+
       result = sigwait(&sigset, &sig);
-      //sleep(1);
-      //nanosleep((const struct timespec[]){{0, 100000L}}, NULL);
-//      printf("morse char: %c", s[j]);
       if (morseChar[j] == '.') {
         kill(parentPid, SIGUSR1);
       } else if (morseChar[j] == '-') {
@@ -228,19 +216,18 @@ void morseCode(char *s, pid_t parentPid, int pipefd[2]) {
     //nanosleep((const struct timespec[]){{0, 100000L}}, NULL);
     kill(parentPid, SIGALRM); // end of one text char
   }
-  //char* morseCode = morseEncode (s[])
 
 }
 
 void readSendMorse(int ifd, int ofd, pid_t parentPid, int pipefd[2]) {
   char buf[129];
   long n;
+  //printf("Child idf: %d", ifd);
   while ((n = read(ifd, buf, 128)) > 0) {
-    buf[n] = '\0';  // re-terminate
-    // printf("%s",buf);
-    morseCode(buf, parentPid, NULL);
-    //write(ofd, buf, n);
-  }
+      buf[n] = '\0';  // re-terminate
+      morseCode(buf, parentPid, NULL);
+    }
+
   sleep(1);
 
 }
@@ -253,33 +240,13 @@ struct Decoder initDecoder(int ofd) {
 
 void processMorse(struct Decoder *decoder, char signal) {
   if (signal == SIGUSR1 || signal == SIGUSR2/* || signal == SIGALRM*/) {
-    //printf("Process morse: %d\n", signal);
     if (signal == SIGUSR1) {
       decoder->queue[decoder->i] = '.';
-    } else /*if (signal == SIGUSR2)*/ {
+    } else {
       decoder->queue[decoder->i] = '-';
     }
     decoder->queue[decoder->i + 1] = '\0'; // close string
     decoder->i = decoder->i + 1; // next index
-//    char symbol = morseDecode(decoder->queue);
-//    if (symbol == 206) {
-//      return;
-//    } else {
-//      printf("%s", decoder->queue);
-//      decoder->i = 0;
-//      write(decoder->ofd, &symbol, 1);
-//    }
-
-//    if (decoder->i == 4) { //
-//      printf("%s", decoder->queue);
-//      decoder->i = 0;
-//      char symbol = morseDecode(decoder->queue);
-//      write(decoder->ofd, &symbol, 1);
-//    } else {
-//
-//      decoder->i = decoder->i + 1;
-//      printf("Process morse: %d\n", decoder->i);
-//    }
 
   } else if (signal == SIGALRM) { // end of morse string reached process 1...5 morse chars
     decoder->queue[decoder->i] = '\0';

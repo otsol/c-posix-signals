@@ -7,9 +7,10 @@ endif()
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(sovohj as1.c logging.c logging.h)
-add_executable(hello_world main.c morse.c morse.h logging.c logging.h)
+add_executable(sovohj main.c logging.c logging.h)
+add_executable(hello_world child_exec.c morse.c morse.h logging.c logging.h)
+add_executable(as1_mockup as1_mockup.c)
 
 
-target_compile_options(sovohj PRIVATE -Wall -pedantic -Wextra ) #-Werror
-target_compile_options(hello_world PRIVATE -Wall -pedantic -Wextra ) #-Werror
+target_compile_options(sovohj PRIVATE -Wall -pedantic -Wextra -g ) #-Werror
+target_compile_options(hello_world PRIVATE -Wall -pedantic -Wextra -g) #-Werror
