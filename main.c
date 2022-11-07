@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
     // init decoder
     struct Decoder dec = initDecoder(ofd);
     //sleep(1);
-    nanosleep((const struct timespec[]){{0, 10000000L}}, NULL);
+    nanosleep((const struct timespec[]){{0, 50000000L}}, NULL);
     kill(pid, SIGUSR1);
     for (;;) {
       char mysignal;
