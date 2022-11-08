@@ -77,8 +77,16 @@ int main(int argc, char **argv) {
     close(ofd);
     return 0;
   }
-  printf("%d",ifd);
-
+  //printf("%d",ifd);
+  int pid = fork();
+  if (pid == -1) {
+    perror("<parent> Fork failed");
+    return -1;
+  }
+  if (pid == 0) {
+    if (execl("./sovohj", "sovohj", "as1_temp", argv[2], NULL) != 0)
+      perror("execv");
+  }
   snprintf(ifd_str, 8, "%d", ifd);
   snprintf(ofd_str, 8, "%d", ofd);
   if (execl("./child_exec", "child_exec", ifd_str, ofd_str, NULL) != 0)

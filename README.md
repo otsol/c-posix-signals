@@ -17,6 +17,8 @@ in the source code folder
 Usage: ./sovohj [input|-] [output|-]
 Example: ./sovohj - testfile2
 ```
+Press ^D to send EOF when using '-' as the first argument.
+It closes the standard input (stdin).
 
 ## Source code
 - sovohj.c / sovohj binary:

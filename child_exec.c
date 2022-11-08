@@ -23,6 +23,12 @@ int main(int argc, char **argv) {
   ifd = atoi(argv[1]);
   ofd = atoi(argv[2]);
 
+  int log_pipe[2], nbytes;
+
+  if (pipe(log_pipe) < 0)
+    exit(1);
+
+
 
   pid = fork();
   if (pid == -1) {
@@ -43,7 +49,8 @@ int main(int argc, char **argv) {
     exit(123);
   } else {
     // Only parent process would come here
-
+    char msg[] = "Program started\n";
+    write(log_pipe[1], msg, strlen(msg));
     // signal handler struct
     struct sigaction sig;
 
