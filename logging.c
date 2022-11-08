@@ -9,26 +9,15 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-void logger(const char* tag, const char* message) {
-  time_t now;
-  time(&now);
-  //printf("[%s] [%s]: %s\n", ctime(&now), tag, message);
-}
+char time_str[64]; // string for storing formatted time string
+int len; // len for snprintf
+// log string for writing to pipe
+char log_str[128];
 
-int main(int argc, char **argv) {
-  pid_t pid;
-  int ifd, ofd;
-  ofd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0666);
-  // str to int
-  ifd = atoi(argv[1]);
-  ofd = atoi(argv[2]);
+// time for logging
+time_t rawtime;
+struct tm * timeinfo;
 
-  char buf[129];
-  long n;
-
-  while(1) {
-    n = read(ifd, buf, 128);
-    write(ofd, buf, n);
-  }
+void logger(int log_pipe, const char* format_message) {
 
 }

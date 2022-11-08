@@ -2,7 +2,7 @@
 PROGS=sovohj child_exec
 CC=gcc
 #CC=clang
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -pedantic
 C_E_OBJS = child_exec.o morse.o
 S_OBJ = main.o
 
