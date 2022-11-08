@@ -20,6 +20,11 @@ Example: ./sovohj - testfile2
 Press ^D to send EOF when using '-' as the first argument.
 It closes the standard input (stdin).
 
+Logging in "as1_log" file
+
+Filenames "as1_log" and "as1_temp" are reserved for the program.
+
+
 ## Source code
 - sovohj.c / sovohj binary:
   - first main function, parses and passes input arguments
