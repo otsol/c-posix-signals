@@ -6,7 +6,7 @@
 #define MORSE_H
 #include <stdio.h>
 #include <unistd.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <string.h>
 

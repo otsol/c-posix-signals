@@ -6,14 +6,14 @@ and sends the text via POSIX signals like SIGUSR1.
 ## Installation
 
 This program can be installed by running
-```bash
+```
 make
 ```
 in the source code folder
 
 ## Usage
 
-```bash
+```
 Usage: ./sovohj [input|-] [output|-]
 Example: ./sovohj - testfile2
 ```
