@@ -1,7 +1,7 @@
 # Sovellusohjelmointi Assignment 1
 
-This is a program that reads a file or from terminal
-and send the text via POSIX signals like SIGUSR1.
+This is a program that reads a file or input from terminal
+and sends the text via POSIX signals like SIGUSR1.
 
 ## Installation
 
