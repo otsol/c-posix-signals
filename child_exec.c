@@ -57,17 +57,22 @@ int main(int argc, char **argv) {
     // dup(log_pipe[1]);
 
     // write to log pipe
+    close(log_pipe[0]);
     time(&rawtime);
     timeinfo = localtime(&rawtime);
     strftime(time_str, 64, "%F %T", timeinfo);
-    len = snprintf(log_str, 128, "[%s] Child: PROCESS STARTED -------------\n", time_str);
+    len = snprintf(log_str, 128, "[%s] Child:  PROCESS STARTED ----------------------\n", time_str);
     write(log_pipe[1], log_str, len);
     close(log_pipe[0]);
 
     // Pass input file fd, output file fd parent process ID to morse library
     pid_t ppid = getppid();
     readSendMorse(ifd, ppid, NULL);
-    write(log_pipe[1], "hello", 6);
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime(time_str, 64, "%F %T", timeinfo);
+    len = snprintf(log_str, 128, "[%s] Child:  PROCESS ENDING -----------------------\n", time_str);
+    write(log_pipe[1], log_str, len);
 
 
     close(ifd);
@@ -149,8 +154,12 @@ int main(int argc, char **argv) {
 
     strftime(time_str, 64, "%F %T", timeinfo);
     len = snprintf(log_str, 128, "[%s] Parent: Closed signal pipe\n", time_str);
-    write(log_ofd, log_str, len);
+    write(log_pipe[1], log_str, len);
+    len = snprintf(log_str, 128, "[%s] Parent: PROGRAM QUITTING ---------------------\n", time_str);
+    write(log_pipe[1], log_str, len);
+    long n = read(log_pipe[0], buf, 1024);
+    write(log_ofd, buf, n);
 
   }
-
+  exit(0);
 }
