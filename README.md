@@ -7,6 +7,7 @@ and sends the text via POSIX signals like SIGUSR1.
 
 This program can be installed by running
 ```
+cmake .
 make
 ```
 in the source code folder
@@ -15,8 +16,20 @@ in the source code folder
 
 ```
 Usage: ./sovohj [input|-] [output|-]
-Example: ./sovohj - testfile2
+
+Example:
+./sovohj - testfile2 [starts to ask for input]
+HEIPPARALLAA 1234
+
+HEI HEI
+[press ctrl + D --> program closes]
+
+cat testfile
+HEIPPARALLAA*1234**HEI*HEI*% 
+
 ```
+Use CAPITAL LETTERS
+
 Press ^D to send EOF when using '-' as the first argument.
 It closes the standard input (stdin).
 
