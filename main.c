@@ -1,95 +1,90 @@
+/**
+ *
+ *
+ */
+
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <assert.h>
+#include <string.h>
+#include <fcntl.h>
 
-#include "morse.h"
-
-static int sigpipe = 0;
-
-static void sig_usr(int signo) {
-    char ret = signo;
-    write(sigpipe,&ret,1);
-}
 
 int main(int argc, char **argv) {
-    pid_t pid;
-    int ifd,ofd,n;
-    char buf[129];
-    ifd = atoi(argv[1]);
-    ofd = atoi(argv[2]);
-    printf("Hello, World!\n");
-    printf ("Number of arguments %d\n", argc);
+  int ifd, ofd;
+  char ifd_str[8];
+  char ofd_str[8];
 
-    printf("I'm open-exec2 and ifd is %d\n", ifd);
-    printf("I'm open-exec2 and ifd is %d\n", ofd);
-
-    pid = fork();
-    if (pid == -1) {
-            perror("<parent> Fork failed");
-            return -1;
-        }
-
-    if (pid == 0) {
-            // Only child process would come here
-            printf("<child> I'm alive!\n");
-            pid_t ppid = getppid();
-            printf("%d",ppid);
-            readSendMorse(ifd, ofd, ppid);
-            //kill(ppid, SIGUSR1);
-            printf("%d",getpid());
-            exit(123);
+  // Quick and dirty command line parsing
+  if (argc == 2) { // Only input file, output stdout
+    ofd = STDOUT_FILENO;
+    if (strcmp(argv[1], "-") == 0) {
+      ifd = STDIN_FILENO;
     } else {
-        // Only parent process would come here
-        printf("<parent> Me too!\n");
-            struct sigaction sig;
-            int pipefd[2];
-
-            assert(pipe(pipefd) == 0);
-            sigpipe = pipefd[1];
-
-            sigemptyset(&sig.sa_mask);
-            sig.sa_flags=0;
-            sig.sa_handler = sig_usr;
-
-            assert((sigaction(SIGUSR1,&sig,NULL)) == 0);
-            assert((sigaction(SIGUSR2,&sig,NULL)) == 0);
-
-            for ( ; ; ) {
-                    char mysignal;
-                    int res = read(pipefd[0],&mysignal,1);
-                    // When read is interrupted by a signal, it will return -1 and errno is EINTR.
-                    if (res == 1) {
-                            if (mysignal == SIGUSR1) {
-                                printf("received SIGUSR1: %d\n", mysignal);
-                                //exit(123);
-                                //break;
-                            } else if (mysignal == SIGUSR2)   {
-                                printf("received SIGUSR2\n");
-                                //break;
-                            }
-                        }
-                }
-
-        }
-
-
-    //int c;
-//    while((c=getc(ifd))!=EOF){
-//            printf("%c",c);
-//    }
-
-//    while ((c = getc(ifd)) != EOF) {
-//        printf("%c",c);
-//    }
-// seems like a stream cannot be passed or read from (fopen ...)
-    while ((n = read(ifd, buf, 128)) > 0) {
-        buf[n] = '\0';  // re-terminate
-        printf("%s",buf);
-        write(ofd, buf, n);
+      ifd = open(argv[1], O_RDONLY);
+      //ofd = fopen (argv[1], "r");
+      if (ifd < 0) {
+        fprintf(stderr, "Opening input file failed\n");
+        return -1;
+      }
     }
-    printf("%d",getpid());
+
+  } else if (argc == 3) { // Both input and output file given
+    if (strcmp(argv[1], "-") == 0) {
+      ifd = STDIN_FILENO;
+    } else {
+      ifd = open(argv[1], O_RDONLY);
+      if (ifd < 0) {
+        fprintf(stderr, "Opening input file failed\n");
+        return -1;
+      }
+    }
+    if (strcmp(argv[2], "-") == 0) {
+      ofd = STDOUT_FILENO;
+    } else {
+      ofd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0666);
+      if (ofd < 0) {
+        fprintf(stderr, "Creating output file failed\n");
+        return -1;
+      }
+    }
+  } else {
+    fprintf(stderr, "Usage: %s [input|-] [output|-]\n", argv[0]);
+    return -1;
+  }
+  //printf("%d",ifd);
+
+
+  // if input file descriptor is stdin, then create a temporary file
+  // and write to it from stdin.
+  // this temp file is passed to a new process (same program, new process)
+  if (ifd == STDIN_FILENO) {
+    // create tempfile to store input from stdin
+    int ifd_temp = open("as1_temp", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+
+    char buf[129];
+    long n;
+    while ((n = read(ifd, buf, 128)) > 0) {
+      buf[n] = '\0';  // re-terminate
+      // printf("%s",buf);
+      write(ifd_temp, buf, n);
+      //write(ofd, buf, n);
+    }
+
+    // call to itself with new tempfile for input
+    if (execl("./sovohj", "sovohj", "as1_temp", argv[2], NULL) != 0)
+      perror("execv");
+    close(ifd);
+    close(ofd);
     return 0;
+  }
+  //printf("%d",ifd);
+  snprintf(ifd_str, 8, "%d", ifd);
+  snprintf(ofd_str, 8, "%d", ofd);
+  if (execl("./child_exec", "child_exec", ifd_str, ofd_str, NULL) != 0)
+    perror("execv");
+
+  close(ifd);
+  close(ofd);
+
+  return 0;
 }
