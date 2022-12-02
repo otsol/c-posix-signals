@@ -17,8 +17,8 @@ struct Decoder {
 };
 
 char* morseEncode(char x);
-void morseCode(char *s, pid_t parentPid, int pipefd[2]);
-void readSendMorse(int ifd, pid_t parentPid, int pipefd[2]);
+void morseCode(char *s, pid_t parentPid);
+void readSendMorse(int ifd, pid_t parentPid);
 char morseDecode(char* s);
 void processMorse(struct Decoder *decoder, char signal);
 struct Decoder initDecoder(int ofd);

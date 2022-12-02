@@ -61,13 +61,13 @@ int main(int argc, char **argv) {
     time(&rawtime);
     timeinfo = localtime(&rawtime);
     strftime(time_str, 64, "%F %T", timeinfo);
-    len = snprintf(log_str, 128, "[%s] Child:  PROCESS STARTED ----------------------\n", time_str);
+    len = snprintf(log_str, 128, "[%s] Child:  PROCESS STARTED with %d args----------\n", time_str, argc);
     write(log_pipe[1], log_str, len);
     close(log_pipe[0]);
 
     // Pass input file fd, output file fd parent process ID to morse library
     pid_t ppid = getppid();
-    readSendMorse(ifd, ppid, NULL);
+    readSendMorse(ifd, ppid);
     time(&rawtime);
     timeinfo = localtime(&rawtime);
     strftime(time_str, 64, "%F %T", timeinfo);

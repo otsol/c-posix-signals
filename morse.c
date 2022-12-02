@@ -187,7 +187,7 @@ char morseDecode(char *s) {
 
 }
 
-void morseCode(char *s, pid_t parentPid, int pipefd[2]) {
+void morseCode(char *s, pid_t parentPid) {
   // character by character print
   // Morse code
   char morseChar[10];
@@ -217,13 +217,13 @@ void morseCode(char *s, pid_t parentPid, int pipefd[2]) {
 
 }
 
-void readSendMorse(int ifd, pid_t parentPid, int pipefd[2]) {
+void readSendMorse(int ifd, pid_t parentPid) {
   char buf[129];
   long n;
   // read from input file until EOF is reached connection closes
   while ((n = read(ifd, buf, 128)) > 0) {
       buf[n] = '\0';  // re-terminate
-      morseCode(buf, parentPid, NULL);
+    morseCode(buf, parentPid);
     }
 
   sleep(1);
